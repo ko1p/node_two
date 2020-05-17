@@ -8,14 +8,19 @@ const getAllUsers = ((req, res) => {
 
 const getUser = ((req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(404).send({ message: 'Нет пользователя с таким id' }));
+    .then((user) => {
+      if (user !== null) {
+        res.send({ data: user });
+      } else {
+        res.status(404).send({ message: 'Нет пользователя с таким id' });
+      }
+    })
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
 const createUser = ((req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .populate(['owner', 'likes'])
     .then((user) => res.send({ data: user }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });

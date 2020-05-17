@@ -15,7 +15,13 @@ const createCard = ((req, res) => {
 
 const deleteCard = ((req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then(() => res.send({ message: 'Карточка успешно удалена' }))
+    .then((card) => {
+      if (card !== null) {
+        res.send({ message: 'Карточка успешно удалена' });
+      } else {
+        res.status(404).send({ message: 'Ошибка, карточки с таким id нет' });
+      }
+    })
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
@@ -25,7 +31,13 @@ const likeCard = ((req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then(() => res.send({ message: 'Лайк успешно поставлен' }))
+    .then((card) => {
+      if (card !== null) {
+        res.send({ message: 'Лайк успешно поставлен' });
+      } else {
+        res.status(404).send({ message: 'Лайк не поставлен, т.к карточки с таким id нет' });
+      }
+    })
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
@@ -35,8 +47,14 @@ const dislikeCard = ((req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then(() => res.send({ message: 'Лайк успешно снят' }))
-    .catch(() => res.status(500).send({ message: 'Проищошла ошибка' }));
+    .then((card) => {
+      if (card !== null) {
+        res.send({ message: 'Лайк успешно снят' });
+      } else {
+        res.status(404).send({ message: 'Лайк не снят, т.к карточки с таким id нет' });
+      }
+    })
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
 module.exports = {
