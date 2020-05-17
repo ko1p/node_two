@@ -18,9 +18,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator(avatarLink) {
-        return validator.isURL(avatarLink, { protocols: ['http', 'https'], require_protocol: true });
+      validator(cardLink) {
+        return validator.isURL(cardLink, { protocols: ['http', 'https'], require_protocol: true });
       },
+      message: (props) => `Введенный вами адрес: ${props.value} некорректен`,
     },
   },
 });

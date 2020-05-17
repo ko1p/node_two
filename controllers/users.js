@@ -22,7 +22,13 @@ const createUser = ((req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.errors.avatar.name === 'ValidatorError') {
+        res.status(400).send({ message: err.errors.avatar.message });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 });
 
 const updateUserProfile = ((req, res) => {
@@ -45,7 +51,13 @@ const updateUserAvatar = ((req, res) => {
     upsert: true,
   })
     .then((userProfile) => res.send({ data: userProfile }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.errors.avatar.name === 'ValidatorError') {
+        res.status(400).send({ message: err.errors.avatar.message });
+      } else {
+        res.status(500).send({ message: 'Произошла ошибка' });
+      }
+    });
 });
 
 module.exports = {
