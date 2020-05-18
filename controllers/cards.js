@@ -11,7 +11,7 @@ const createCard = ((req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((newCard) => res.send({ data: newCard }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(500).send({ message: err.message }));
 });
 
 const deleteCard = async (req, res) => {

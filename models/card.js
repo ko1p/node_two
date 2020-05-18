@@ -15,7 +15,7 @@ const cardsSchema = new mongoose.Schema({
       validator(cardLink) {
         return validator.isURL(cardLink, { protocols: ['http', 'https'], require_protocol: true });
       },
-      message: (props) => `Введенный вами адрес: ${props.value} некорректен`,
+      message: (props) => `Введенный вами URL-адрес: ${props.value} некорректен`,
     },
   },
   owner: {
