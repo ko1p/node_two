@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/notFoundError');
 
 const getAllCards = ((req, res) => {
   Card.find({})
@@ -10,58 +11,41 @@ const createCard = ((req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((newCard) => res.send({ data: newCard }))
-    .catch((err) => {
-      if (err.errors.link.name === 'ValidatorError') {
-        res.status(400).send({ message: err.errors.link.message });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
-      }
-    });
-});
-
-const deleteCard = ((req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => {
-      if (card !== null) {
-        res.send({ message: 'Карточка успешно удалена' });
-      } else {
-        res.status(404).send({ message: 'Ошибка, карточки с таким id нет' });
-      }
-    })
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
-const likeCard = ((req, res) => {
-  Card.findByIdAndUpdate(
+const deleteCard = async (req, res) => {
+  await Card.findByIdAndRemove(req.params.cardId)
+    .orFail(() => new NotFoundError('Пользователь с таким id не найден'))
+    .then(() => res.send({ message: 'Карточка удалена' }))
+    .catch((err) => {
+      const statusCode = err.statusCode || 500;
+      const message = statusCode === 500 ? 'Произошла ошибка' : err.message;
+      res.status(statusCode).send({ message });
+    });
+};
+
+const likeCard = async (req, res) => {
+  await Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (card !== null) {
-        res.send({ message: 'Лайк успешно поставлен' });
-      } else {
-        res.status(404).send({ message: 'Лайк не поставлен, т.к карточки с таким id нет' });
-      }
-    })
+    .orFail(() => new NotFoundError('Нет карточки с таким id, лайк не поставлен'))
+    .then(() => res.send({ message: 'Лайк поставлен' }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
-});
+};
 
-const dislikeCard = ((req, res) => {
+const dislikeCard = async (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => {
-      if (card !== null) {
-        res.send({ message: 'Лайк успешно снят' });
-      } else {
-        res.status(404).send({ message: 'Лайк не снят, т.к карточки с таким id нет' });
-      }
-    })
+    .orFail(() => new NotFoundError('Нет карточки с таким id, лайк не снят'))
+    .then(() => res.send({ message: 'Лайк снят' }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
-});
+};
 
 module.exports = {
   getAllCards,

@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const NotFoundError = require('../errors/notFoundError');
 
 const getAllUsers = ((req, res) => {
   User.find({})
@@ -6,29 +7,22 @@ const getAllUsers = ((req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
-const getUser = ((req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      if (user !== null) {
-        res.send({ data: user });
-      } else {
-        res.status(404).send({ message: 'Нет пользователя с таким id' });
-      }
-    })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
-});
+const getUser = async (req, res) => {
+  await User.findById(req.params.userId)
+    .orFail(() => new NotFoundError('Пользователь с таким id не найден'))
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      const statusCode = err.statusCode || 500;
+      const message = statusCode === 500 ? 'Произошла ошибка' : err.message;
+      res.status(statusCode).send({ message });
+    });
+};
 
 const createUser = ((req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.errors.avatar.name === 'ValidatorError') {
-        res.status(400).send({ message: err.errors.avatar.message });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
-      }
-    });
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
 const updateUserProfile = ((req, res) => {
@@ -51,13 +45,7 @@ const updateUserAvatar = ((req, res) => {
     upsert: true,
   })
     .then((userProfile) => res.send({ data: userProfile }))
-    .catch((err) => {
-      if (err.errors.avatar.name === 'ValidatorError') {
-        res.status(400).send({ message: err.errors.avatar.message });
-      } else {
-        res.status(500).send({ message: 'Произошла ошибка' });
-      }
-    });
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
 module.exports = {
