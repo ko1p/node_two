@@ -1,7 +1,7 @@
 {
-  "name": "node_one",
-  "version": "0.0.3",
-  "description": "My first node.js project",
+  "name": "node_two",
+  "version": "0.0.4",
+  "description": "My second node.js project",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",

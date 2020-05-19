@@ -2,7 +2,7 @@
 
 Ссылка на проект: [node.projectTwo](https://github.com/ko1p/node_two "REST API проекта Mesto")
 
-Текущая версия: **v0.0.3**
+Текущая версия: **v0.0.4**
 
 ## Что это за проект?
 
@@ -29,7 +29,11 @@ _mongodb://localhost:27017/mestodb_
 #### Запуск MongoDB
     mongod
 #### Запуск приложения
-    node app.js
+    node start
+    
+или в режиме разработки с функцией "Hot Reload"
+
+    node run dev 
 
 ### Примеры запросов:
 

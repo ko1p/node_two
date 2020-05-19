@@ -7,8 +7,8 @@ const getAllUsers = ((req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 });
 
-const getUser = async (req, res) => {
-  await User.findById(req.params.userId)
+const getUser = (req, res) => {
+  User.findById(req.params.userId)
     .orFail(() => new NotFoundError('Пользователь с таким id не найден'))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
@@ -35,7 +35,7 @@ const updateUserProfile = ((req, res) => {
     upsert: true,
   })
     .then((userProfile) => res.send({ data: userProfile }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(500).send({ message: err.message }));
 });
 
 const updateUserAvatar = ((req, res) => {
@@ -45,7 +45,7 @@ const updateUserAvatar = ((req, res) => {
     upsert: true,
   })
     .then((userProfile) => res.send({ data: userProfile }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => res.status(500).send({ message: err.message }));
 });
 
 module.exports = {
