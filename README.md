@@ -29,7 +29,7 @@ _mongodb://localhost:27017/mestodb_
 #### Запуск MongoDB
     mongod
 #### Запуск приложения
-    node start
+    node run start
     
 или в режиме разработки с функцией "Hot Reload"
 
