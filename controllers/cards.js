@@ -30,17 +30,13 @@ const deleteCard = ((req, res) => {
 });
 
 const likeCard = ((req, res) => {
-  Card.findById(req.params.cardId)
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
     .orFail(() => new NotFoundError('Ошибка, не удалось поставить лайк, карточки с таким id нет'))
-    .then(() => {
-      Card.findByIdAndUpdate(
-        req.params.cardId,
-        { $addToSet: { likes: req.user._id } },
-        { new: true },
-      )
-        .then(() => res.send({ message: 'Карточка лайкнута' }))
-        .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
-    })
+    .then(() => res.send({ message: 'Карточка лайкнута' }))
     .catch((err) => {
       const statusCode = err.statusCode || 500;
       const message = statusCode === 500 ? 'Произошла ошибка' : err.message;
@@ -49,17 +45,13 @@ const likeCard = ((req, res) => {
 });
 
 const dislikeCard = ((req, res) => {
-  Card.findById(req.params.cardId)
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
     .orFail(() => new NotFoundError('Ошибка, не удалось снять лайк, карточки с таким id нет'))
-    .then(() => {
-      Card.findByIdAndUpdate(
-        req.params.cardId,
-        { $addToSet: { likes: req.user._id } },
-        { new: true },
-      )
-        .then(() => res.send({ message: 'Лайк с карточки успешно убран' }))
-        .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
-    })
+    .then(() => res.send({ message: 'Лайк с карточки успешно убран' }))
     .catch((err) => {
       const statusCode = err.statusCode || 500;
       const message = statusCode === 500 ? 'Произошла ошибка' : err.message;
