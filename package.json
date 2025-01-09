@@ -16,7 +16,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
-    "body-parser": "^1.20.1",
+    "body-parser": "^1.20.3",
     "express": "^4.21.1",
     "mongoose": "^5.13.20",
     "validator": "^13.7.0"
